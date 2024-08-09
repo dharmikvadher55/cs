@@ -1,0 +1,25 @@
+#!/bin/bash
+
+# Check if the project name is provided
+if [ -z "$1" ]; then
+  echo "Usage: $0 <project_name>"
+  exit 1
+fi
+
+# Project name from the parameter
+PROJECT_NAME=$1
+
+# Define directories
+SOURCE_DIR=~/storage/music/tomcat/webapps/${PROJECT_NAME}/WEB-INF/classes
+CLASSES_DIR=~/storage/music/tomcat/webapps/${PROJECT_NAME}/WEB-INF/classes
+TOMCAT_LIB=~/tomcat/lib/servlet-api.jar
+
+# Create classes directory if it doesn't exist
+mkdir -p $CLASSES_DIR
+
+# Compile Java files
+javac -cp $TOMCAT_LIB -d $CLASSES_DIR $(find $SOURCE_DIR -name "*.java")
+
+echo "Compilation completed. Java files are compiled to $CLASSES_DIR"
+sh ~/sync.sh
+~
