@@ -1,69 +1,16 @@
-#!/bin/bash
+@echo off
+setlocal
 
-# Check if project name is provided
-if [ "$#" -ne 1 ]; then
-    echo "Usage: $0 <project_name>"
-    exit 1
-fi
+:: Set the path to the servlet API JAR
+set "CLASSPATH=path\to\servlet.api.jar"
 
-# Define project directory
-PROJECT_NAME=$1
-PROJECT_DIR=~/storage/music/tomcat/webapps/$PROJECT_NAME
+:: Directory where your projects are located
+set "PROJECT_DIR=path\to\projects"
 
-# Create directory structure
-mkdir -p $PROJECT_DIR/WEB-INF/classes
-mkdir -p $PROJECT_DIR/WEB-INF/lib
+:: Loop through each project directory
+for /d %%D in ("%PROJECT_DIR%\*") do (
+    echo Compiling project %%D
+    javac -classpath "%CLASSPATH%" "%%D\classes\*.java"
+)
 
-# Create sample HTML file
-cat <<EOL > $PROJECT_DIR/index.html
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Sample App</title>
-</head>
-<body>
-    <h1>Welcome to My App</h1>
-    <a href="hello">Say Hello</a>
-</body>
-</html>
-EOL
-
-# Create a sample Java servlet file
-cat <<EOL > $PROJECT_DIR/WEB-INF/classes/HelloServlet.java
-import java.io.IOException;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.PrintWriter;
-
-public class HelloServlet extends HttpServlet {
-    @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
-        resp.setContentType("text/html");
-        PrintWriter out = resp.getWriter();
-        out.println("<html><body><h2>Hello from HelloServlet!</h2></body></html>");
-    }
-}
-EOL
-
-# Create web.xml
-cat <<EOL > $PROJECT_DIR/WEB-INF/web.xml
-<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee
-                             http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
-         version="3.1">
-    <servlet>
-        <servlet-name>HelloServlet</servlet-name>
-        <servlet-class>HelloServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>HelloServlet</servlet-name>
-        <url-pattern>/hello</url-pattern>
-    </servlet-mapping>
-</web-app>
-EOL
-
-echo "Project created successfully in $PROJECT_DIR"
+endlocal
